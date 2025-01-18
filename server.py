@@ -1,20 +1,30 @@
-import socket
+import socket  # Импортируем библиотеку сокетов
+import threading  # Импортируем библиотеку для работы с потоками
 
+# Создаем новый сокет
 sock = socket.socket()
+# Привязываем сокет к адресу и порту
 sock.bind(('', 9090))
-sock.listen(0)
-conn, addr = sock.accept()
-print(addr)
+# Устанавливаем режим прослушивания для входящих соединений
+sock.listen(5)  # Позволяем соединения, ожидающие до 5 клиентов
 
-msg = ''
 
+# Функция для обработки работы с клиентом
+def handle_client(conn, addr):
+    print(f'Соединение с {addr} установлено.')
+    msg = ''
+    while True:
+        data = conn.recv(1024)  # Получаем данные от клиента
+        if not data:
+            break  # Если данные отсутствуют, выходим из цикла
+        msg += data.decode()  # Декодируем и добавляем к сообщению
+        conn.send(data)  # Отправляем обратно клиенту 
+    print(f'Закрытие соединения с {addr}. Сообщение: {msg}')
+    conn.close()  # Закрываем соединение
+
+
+# Основной цикл для получения соединений
 while True:
-	data = conn.recv(1024)
-	if not data:
-		break
-	msg += data.decode()
-	conn.send(data)
-
-print(msg)
-
-conn.close()
+    conn, addr = sock.accept()  # Ожидаем подключения
+    # Создаем новый поток для работы с клиентом
+    threading.Thread(target=handle_client, args=(conn, addr)).start()

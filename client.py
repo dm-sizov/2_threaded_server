@@ -1,16 +1,18 @@
-import socket
-from time import sleep
+import socket  # Импортируем библиотеку сокетов
 
+# Создаем новый сокет
 sock = socket.socket()
+# Устанавливаем блокирующий режим
 sock.setblocking(1)
-sock.connect(('10.38.165.12', 9090))
+# Подключаемся к серверу
+sock.connect(('127.0.0.1', 9090))
 
-#msg = input()
+# Создаем сообщение для отправки серверу
 msg = "Hi!"
-sock.send(msg.encode())
+sock.send(msg.encode())  # Кодируем и отправляем сообщение
 
-data = sock.recv(1024)
+data = sock.recv(1024)  # Получаем ответ от сервера
 
-sock.close()
+sock.close()  # Закрываем соединение
 
-print(data.decode())
+print(data.decode())  # Декодируем и выводим ответ на экран
